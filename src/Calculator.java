@@ -1,3 +1,4 @@
+import com.sun.tools.hat.internal.parser.HprofReader;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -6,15 +7,12 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-
 import java.math.BigDecimal;
 
 public class Calculator extends Application {
@@ -34,8 +32,8 @@ public class Calculator extends Application {
     public void start(Stage primaryStage){
         primaryStage.setTitle("Calculator");
 
-        BorderPane bp = new BorderPane(); // Controls the main layout
-
+        BorderPane bp = new BorderPane(); // Controls the grids below
+        GridPane top = new GridPane();
         GridPane grid = new GridPane(); // Controls main buttons
         grid.setAlignment(Pos.TOP_CENTER);
         grid.setHgap(10);
@@ -43,6 +41,7 @@ public class Calculator extends Application {
 
         // Set special buttons
         Label res = new Label();
+        Label history = new Label();
         Button clear = new Button();
         clear.setText("Clr");
         grid.add(clear, 0, 0);
@@ -110,6 +109,7 @@ public class Calculator extends Application {
                             if (toI != 4){ // If not equals
                                 sto = Double.parseDouble(res.getText());
                                 res.setText("0");
+                                history.setText(ops[toI].getText());
                             }
                     }
                     if (toI != 4){ // If not equals
@@ -146,15 +146,22 @@ public class Calculator extends Application {
         ops[4].setId("equal");
         nums[0].setId("zero");
         grid.setColumnSpan(nums[0], 2);
-        bp.setTop(res);
+        top.add(history, 0, 0);
+        top.add(res, 1, 0 );
+        bp.setTop(top);
+        grid.setHalignment(res, HPos.RIGHT);
         bp.setPadding(new Insets(10,10,10,10));
         grid.setPadding(new Insets(10,0,10,0));
         bp.setCenter(grid);
         grid.setValignment(res, VPos.TOP);
         res.setText("0");
         res.setDisable(true);
-
+        res.setMaxWidth(Double.MAX_VALUE);
+        AnchorPane.setLeftAnchor(res, 0.0);
+        AnchorPane.setRightAnchor(res, 0.0);
+        res.setAlignment(Pos.CENTER);
         Scene scene = new Scene(bp, 255, 345);
+        top.setGridLinesVisible(true);
         primaryStage.sizeToScene();
         primaryStage.setScene(scene);
         scene.getStylesheets().add(Calculator.class.getResource("fancy.css").toExternalForm()); // Load our custom CSS
