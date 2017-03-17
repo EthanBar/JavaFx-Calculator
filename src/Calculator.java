@@ -1,10 +1,9 @@
 import javafx.animation.FadeTransition;
-import javafx.animation.Timeline;
+import javafx.animation.TranslateTransition;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -23,7 +22,8 @@ public class Calculator extends Application {
     private String[] funcTitles = {"÷", "×", "-", "+", "="};
     private double sto = 0; // What we are calculating agianst
     private String lastOp = ""; // What operation we are waiting to do
-    private boolean toOp = false; // Is there any operation being waited on
+    private boolean updateRes = false; // Update the result next button press?
+    private boolean updateHis = false; // Update the history next function press?
 
     public static void main(String[] args){launch(args);}
 
@@ -86,19 +86,32 @@ public class Calculator extends Application {
             grid.add(ops[i], 3, i);
             final int toI = i; // Final to fix compiler complaints
             ops[i].setOnAction(new EventHandler<ActionEvent>() {
+                boolean updateLate = false;
                 @Override
                 public void handle(ActionEvent event) {
                     if (toI != 4){ // If not equals
-                        toOp = true;
+                        if (!updateHis){
+                            history.setText(res.getText() + " " + ops[toI].getText());
+                        } else {
+                            updateLate = true;
+                        }
+                        updateHis = true;
+                        updateRes = true;
+                        // Animations are here. Fade in, and slide in from the right
                         history.setText(res.getText() + " " + ops[toI].getText());
+                        history.setTranslateX(20f);
                         FadeTransition ft = new FadeTransition(Duration.millis(500), history);
                         ft.setFromValue(0.0);
-                        ft.setToValue(0.5);
-                        ft.setCycleCount(1);
-//                        ft.setAutoReverse(true);
+                        ft.setToValue(0.7);
+                        ft.setCycleCount(1); // Only do the animation once
+                        TranslateTransition tt = new TranslateTransition(Duration.millis(400), history);
+                        tt.setByX(-20f);
+                        tt.setCycleCount(1);
+                        tt.play();
                         ft.play();
                     } else {
                         history.setText("");
+                        updateHis = false;
                     }
                     switch(lastOp){
                         case "÷":
@@ -123,6 +136,10 @@ public class Calculator extends Application {
                                 res.setText("0");
                             }
                     }
+                    if (updateLate){
+                        System.out.println("yet");
+                        history.setText(res.getText() + " " + ops[toI].getText());
+                    }
                     lastOp = ops[toI].getText();
                 }
             });
@@ -139,9 +156,9 @@ public class Calculator extends Application {
             nums[i].setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent event) {
-                    if (toOp){
+                    if (updateRes){
                         res.setText("0");
-                        toOp = false;
+                        updateRes = false;
                     }
                     if (res.getText().equals("0")){
                         res.setText(Integer.toString(toI));
