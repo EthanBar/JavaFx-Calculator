@@ -1,3 +1,5 @@
+import javafx.animation.FadeTransition;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -10,13 +12,15 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+import javafx.util.Duration;
+
 import java.math.BigDecimal;
 
 public class Calculator extends Application {
 
     private int[] column = {0,0,1,2,0,1,2,0,1,2,0,1,2}; // Grid positons
     private int[] row = {4,3,3,3,2,2,2,1,1,1,0,0,0};
-    private String[] funcTitles = {"÷", "x", "-", "+", "="};
+    private String[] funcTitles = {"÷", "×", "-", "+", "="};
     private double sto = 0; // What we are calculating agianst
     private String lastOp = ""; // What operation we are waiting to do
     private boolean toOp = false; // Is there any operation being waited on
@@ -86,7 +90,13 @@ public class Calculator extends Application {
                 public void handle(ActionEvent event) {
                     if (toI != 4){ // If not equals
                         toOp = true;
-                        history.setText(res.getText() + ops[toI].getText());
+                        history.setText(res.getText() + " " + ops[toI].getText());
+                        FadeTransition ft = new FadeTransition(Duration.millis(500), history);
+                        ft.setFromValue(0.0);
+                        ft.setToValue(0.5);
+                        ft.setCycleCount(1);
+//                        ft.setAutoReverse(true);
+                        ft.play();
                     } else {
                         history.setText("");
                     }
@@ -95,7 +105,7 @@ public class Calculator extends Application {
                             sto /= Double.parseDouble(res.getText());
                             res.setText(trailer(Double.toString(sto)));
                             break;
-                        case "x":
+                        case "×":
                             sto *= Double.parseDouble(res.getText());
                             res.setText(trailer(Double.toString(sto)));
                             break;
