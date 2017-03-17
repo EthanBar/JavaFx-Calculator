@@ -10,21 +10,18 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
-
 import java.math.BigDecimal;
 
 public class Calculator extends Application {
 
     private int[] column = {0,0,1,2,0,1,2,0,1,2,0,1,2}; // Grid positons
     private int[] row = {4,3,3,3,2,2,2,1,1,1,0,0,0};
-    private String[] funcTitles = {"÷", "X", "-", "+", "="};
-    private double sto = 0; // What we are calculating agiant
+    private String[] funcTitles = {"÷", "x", "-", "+", "="};
+    private double sto = 0; // What we are calculating agianst
     private String lastOp = ""; // What operation we are waiting to do
     private boolean toOp = false; // Is there any operation being waited on
 
-    public static void main(String[] args){
-        launch(args);
-    }
+    public static void main(String[] args){launch(args);}
 
     @Override
     public void start(Stage primaryStage){
@@ -87,12 +84,18 @@ public class Calculator extends Application {
             ops[i].setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent event) {
+                    if (toI != 4){ // If not equals
+                        toOp = true;
+                        history.setText(res.getText() + ops[toI].getText());
+                    } else {
+                        history.setText("");
+                    }
                     switch(lastOp){
                         case "÷":
                             sto /= Double.parseDouble(res.getText());
                             res.setText(trailer(Double.toString(sto)));
                             break;
-                        case "X":
+                        case "x":
                             sto *= Double.parseDouble(res.getText());
                             res.setText(trailer(Double.toString(sto)));
                             break;
@@ -109,12 +112,6 @@ public class Calculator extends Application {
                                 sto = Double.parseDouble(res.getText());
                                 res.setText("0");
                             }
-                    }
-                    if (toI != 4){ // If not equals
-                        toOp = true;
-                        history.setText(ops[toI].getText());
-                    } else {
-                        history.setText("");
                     }
                     lastOp = ops[toI].getText();
                 }
@@ -146,6 +143,8 @@ public class Calculator extends Application {
         }
         // CSS ids
         ops[4].setId("equal");
+        clear.setId("equal");
+        history.setId("history");
         nums[0].setId("zero");
         res.setId("res");
 
@@ -154,13 +153,13 @@ public class Calculator extends Application {
         top.add(history, 0, 0);
         top.add(res, 1, 0 );
         bp.setTop(top);
-        bp.setPadding(new Insets(10,10,10,10));
+        bp.setPadding(new Insets(10,5,10,10));
         grid.setPadding(new Insets(10,0,10,0));
         bp.setCenter(grid);
         grid.setValignment(res, VPos.TOP);
 
         // Set scene
-        Scene scene = new Scene(bp, 255, 345);
+        Scene scene = new Scene(bp, 250, 348);
         primaryStage.sizeToScene();
         primaryStage.setScene(scene);
         scene.getStylesheets().add(Calculator.class.getResource("fancy.css").toExternalForm()); // Load our custom CSS

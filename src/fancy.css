@@ -45,4 +45,7 @@
     -fx-background-color: deepskyblue;
 }
 
-
+#history{
+    -fx-text-fill: rgba(0,0,0,0.5);
+    -fx-font-size: 15px;
+}
